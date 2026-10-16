@@ -643,6 +643,7 @@ function openDrawer(row, sheet){
   const nbo = (r.nbo||0)*(r.bill||0)*(1-(r.msp||0));
   const parts = [["Payroll (W2 + OT, incl. "+pct(load,0)+" load)",payroll,"#2F6FED"],["Stipend",stip,"#7FA6F2"],["MSP fee",mspFee,"var(--seg-muted)"],["NBO (unbilled orientation)",nbo,"#E0A84A"]];
   if(onb) parts.push(["Recruiting + onboarding",onb,"#B5544A"]);
+  if(r.oneTime) parts.push(["One-time costs (e.g. travel reimbursement)",r.oneTime,"#C2410C"]);
   parts.push(["Net profit",r.netProfit,"#0EA5A0"]);
   const tot = r.grossRev||1;
   const notes = D.quality.filter(q=>q.sheet===r.sheet && q.row===r.row);
@@ -667,7 +668,8 @@ function openDrawer(row, sheet){
       <div class="sec"><h5>Pay package (nurse)</h5><div class="kv">
         <div><span>W2 hourly</span><b class="num">${money2(r.w2)}</b></div><div><span>OT rate</span><b class="num">${money2(r.ot)}</b></div>
         <div><span>Weekly stipend</span><b class="num">${money(r.stipend)}</b></div><div><span>Taxable / wk</span><b class="num">${money2(r.weeklyTaxable)}</b></div>
-        <div><span>Gross pay / wk</span><b class="num">${money2(r.weeklyGross)}</b></div><div><span>Contract gross pay</span><b class="num">${money(r.contractGrossPay)}</b></div></div></div>
+        <div><span>Gross pay / wk</span><b class="num">${money2(r.weeklyGross)}</b></div><div><span>Contract gross pay</span><b class="num">${money(r.contractGrossPay)}</b></div>
+        ${r.oneTime?`<div><span>One-time costs</span><b class="num">${money(r.oneTime)}</b></div><div><span></span><b></b></div>`:""}</div></div>
       <div class="sec"><h5>Billing</h5><div class="kv">
         <div><span>Bill rate</span><b class="num">${money2(r.bill)}</b></div><div><span>Weekly billing</span><b class="num">${money(r.weeklyBill)}</b></div>
         ${r.billAfter?`<div><span>Bill after increase</span><b class="num">${money2(r.billAfter)}</b></div><div><span></span><b></b></div>`:""}
@@ -677,7 +679,7 @@ function openDrawer(row, sheet){
         <div class="stack">${parts.map(([l,v,c])=>`<i title="${esc(l)}: ${money(v)}" style="width:${Math.max(0,(v||0)/tot*100)}%;background:${c}"></i>`).join("")}</div>
         <div class="slegend">${parts.map(([l,v,c])=>`<span><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${c};margin-right:6px"></i>${esc(l)}</span><b class="num" style="text-align:right">${money(v)}</b><em class="num">${pct((v||0)/tot)}</em>`).join("")}
         <span style="border-top:1px solid var(--line);padding-top:3px"><b>Gross revenue</b></span><b class="num" style="text-align:right;border-top:1px solid var(--line);padding-top:3px">${money(r.grossRev)}</b><em style="border-top:1px solid var(--line);padding-top:3px">100%</em></div>
-        <div class="foot">Same formula as the workbook: net revenue − W2/OT pay × (1 + ${pct(load,0)} load) − stipends − NBO hours × bill × (1 − MSP)${onb?" − onboarding":""}.</div></div>
+        <div class="foot">Same formula as the workbook: net revenue − W2/OT pay × (1 + ${pct(load,0)} load) − stipends − NBO hours × bill × (1 − MSP)${onb?" − onboarding":""}${r.oneTime?" − one-time costs":""}.</div></div>
       ${extra.length?`<div class="sec"><h5>Other columns</h5><div class="kv one">${extra.map(([k,v])=>`<div><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join("")}</div></div>`:""}
     </div>`;
   $("#drawer").classList.add("on"); $("#scrim").classList.add("on"); $("#drawer").setAttribute("aria-hidden","false");

@@ -53,6 +53,7 @@ FIELD_ALIASES = {
     "reason":     ["status / reason", "status", "reason"],
     "team":       ["team", "team name", "recruiter team"],
     "recruiter":  ["recruiter", "recruiter name"],
+    "onetime":    ["one-time costs ($)", "one-time costs", "one time costs", "other costs"],
 }
 
 def norm(s):
@@ -184,7 +185,8 @@ def recompute(rec, fees, settings, dq, sheet):
         calc["net_rev"] = calc["gross_rev"] * (1 - (msp or 0))
         if None not in (W2, OT, stip):
             pay = weeks * (min(G, 40) * W2 + max(G - 40, 0) * OT) * (1 + load)
-            calc["net_profit"] = calc["net_rev"] - pay - weeks * stip - (nbo or 0) * bill * (1 - (msp or 0)) - onb
+            calc["net_profit"] = (calc["net_rev"] - pay - weeks * stip - (nbo or 0) * bill * (1 - (msp or 0)) - onb
+                                  - (num(rec.get("onetime")) or 0))
     for k, v in calc.items():
         cached = num(rec["_cached"].get(k)) if k in rec["_cached"] else None
         if k in rec["_formulas"] and cached is not None and v is not None and abs(cached - v) > 0.01:
@@ -212,6 +214,7 @@ def finalize(rec, status):
         "grossRev": num(rec.get("gross_rev")), "netRev": num(rec.get("net_rev")),
         "netProfit": num(rec.get("net_profit")), "reason": text(rec.get("reason")),
         "team": text(rec.get("team")), "recruiter": text(rec.get("recruiter")),
+        "oneTime": num(rec.get("onetime")) or 0,
         "extra": {k: (v.isoformat() if isinstance(v, (dt.date, dt.datetime)) else v) for k, v in rec["_extra"].items()},
     }
     out["weeklyTaxable"] = wk_taxable
