@@ -39,3 +39,16 @@ NBO hours and the calculator settings.
 - Net profit = Net revenue − Weeks × (min(G,40) × W2 + max(G−40,0) × OT) × (1 + payroll load)
   − Weeks × Stipend − NBO hrs × Bill × (1 − MSP %) − onboarding cost
 - Weekly gross pay (nurse) = min(G,40) × W2 + max(G−40,0) × OT + Stipend
+
+## Candidate status: Onboarding, Started, Cancelled
+Status comes from the workbook sheet a candidate sits on:
+- **OB Candidates** → Onboarding (accepted, not started yet)
+- **Started Candidates** → Started
+- **Cancelled Offers** → Cancelled (kept out of the active totals)
+
+When the Soloh Compliance Board marks a candidate as started, move their row and rebuild:
+```bash
+python3 move_candidate.py --xlsx data/OB_Candidates_Pay_Packages_Soloh.xlsx --name "Full Name" --to "Started Candidates"
+python3 build.py --password "THE-PASSWORD"
+```
+`move_candidate.py` keeps every formula pointing at its own row, so the calculations move with the candidate.

@@ -137,7 +137,7 @@ td b{font-weight:600}
 tfoot td{white-space:nowrap;position:sticky;bottom:0;background:var(--th);font-weight:600;border-top:1px solid var(--line);border-bottom:0}
 .pill{display:inline-block;border-radius:20px;padding:1px 8px;font-size:11px;font-weight:600;white-space:nowrap}
 .p-days{background:var(--amber-50);color:var(--amber)}.p-nights{background:var(--nights-bg);color:var(--nights)}
-.p-active{background:var(--green-50);color:var(--green)}.p-cancelled{background:var(--red-50);color:var(--red)}
+.p-active{background:var(--green-50);color:var(--green)}.p-onb{background:var(--blue-50);color:var(--blue)}.p-cancelled{background:var(--red-50);color:var(--red)}
 .cdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:1px}
 .mbar{display:inline-block;width:38px;height:5px;background:var(--line-2);border-radius:3px;margin-left:6px;vertical-align:2px;overflow:hidden}
 .mbar i{display:block;height:100%;background:var(--teal)}
@@ -258,6 +258,10 @@ aside{position:relative;isolation:isolate;background:radial-gradient(1.3px 1.3px
 :root[data-theme="dark"] .theme-sw button.on{background:#22355A;color:#fff;box-shadow:0 0 0 1px #3D5A8C,0 0 12px rgba(91,140,245,.35)}
 :root[data-theme="dark"] .theme-sw button[data-t="dark"].on svg{color:#B4C8FF}
 @media (max-width:760px){.theme-sw span{display:none}.theme-sw button{padding:6px 8px}}
+.sumstrip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.sumstrip .mini{background:var(--card);border:1px solid var(--line);box-shadow:var(--sh)}
+.sumstrip .mini b{font-size:16px}
+@media (max-width:760px){.sumstrip{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -282,7 +286,8 @@ aside{position:relative;isolation:isolate;background:radial-gradient(1.3px 1.3px
   <aside>
     <div class="brand"><div class="brand-mark">S</div><div><b>Soloh Partners</b><small>Margin Dashboard</small></div></div>
     <button class="nav active" data-view="overview"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Overview</span></button>
-    <button class="nav" data-view="candidates"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c1.9.7 3.1 2.4 3.5 5.2"/></svg><span>Candidates</span><em class="count" id="cntActive"></em></button>
+    <button class="nav" data-view="onboarding"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c1.9.7 3.1 2.4 3.5 5.2"/></svg><span>Onboarding</span><em class="count" id="cntOnb"></em></button>
+    <button class="nav" data-view="started"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 15c-1.5 1.5-2 4-2 6 2 0 4.5-.5 6-2"/><path d="M9 15l-3-3c1.5-4 4.5-8 12-9-1 7.5-5 10.5-9 12z"/><circle cx="15" cy="9" r="1.6"/></svg><span>Started</span><em class="count" id="cntStarted"></em></button>
     <button class="nav" data-view="cancelled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7"/></svg><span>Cancelled offers</span><em class="count" id="cntCancelled"></em></button>
     <button class="nav" data-view="fees"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h10"/></svg><span>Client fees</span></button>
     <button class="nav" data-view="quality"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V7z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span>Data quality</span><em class="count" id="cntQuality"></em></button>
@@ -304,6 +309,7 @@ aside{position:relative;isolation:isolate;background:radial-gradient(1.3px 1.3px
     </div>
     <div class="content" id="content">
       <div class="filters" id="filters">
+        <select id="fStatus"></select>
         <select id="fClient"></select>
         <select id="fShift"></select>
         <select id="fUnit"></select>
@@ -329,9 +335,16 @@ aside{position:relative;isolation:isolate;background:radial-gradient(1.3px 1.3px
       </section>
 
       <!-- candidates -->
-      <section data-page="candidates" class="hidden">
-        <div class="page-h"><h3>Candidate cards</h3><p>Click a card for the full pay package.</p></div>
-        <div class="ccards" id="ccards"></div>
+      <section data-page="onboarding" class="hidden">
+        <div class="page-h"><h3>Onboarding</h3><p>Accepted offers that have not started yet. Click a card for the full pay package.</p></div>
+        <div class="sumstrip" id="sumOnb"></div>
+        <div class="ccards" id="ccOnb"></div>
+      </section>
+
+      <section data-page="started" class="hidden">
+        <div class="page-h"><h3>Started</h3><p>Candidates marked started on the Soloh Compliance Board. Click a card for the full pay package.</p></div>
+        <div class="sumstrip" id="sumStarted"></div>
+        <div class="ccards" id="ccStarted"></div>
       </section>
 
       <!-- cancelled -->
@@ -370,7 +383,8 @@ aside{position:relative;isolation:isolate;background:radial-gradient(1.3px 1.3px
 <script>
 const ENC = /*__ENCRYPTED_DATA__*/null;
 let D = null;                        // decrypted dataset
-const S = {client:"",shift:"",unit:"",month:"",cancelled:false,q:"",sort:"netProfit",dir:-1,view:"overview",sel:null};
+const LIVE = r => r.status!=="Cancelled";
+const S = {status:"",client:"",shift:"",unit:"",month:"",cancelled:false,q:"",sort:"netProfit",dir:-1,view:"overview",sel:null};
 const charts = {};
 // Colors are assigned to clients in Client Fees sheet order (no client names in the page source).
 const COLORS = ["#2F6FED","#0EA5A0","#7C5CE0","#D9468C","#E08A00","#3E9C5A","#B5544A","#5A6B8C","#A07C2E"];
@@ -426,7 +440,7 @@ $("#logoutBtn").onclick = () => { try{sessionStorage.removeItem("soloh_ob_pw");}
 function filtered(opts={}){
   const q = S.q.trim().toLowerCase();
   return D.records.filter(r =>
-    (opts.status ? r.status===opts.status : (S.cancelled || r.status==="Active")) &&
+    (opts.status ? r.status===opts.status : ((S.cancelled || LIVE(r)) && (!S.status || r.status===S.status || r.status==="Cancelled"))) &&
     (!S.client || r.client===S.client) && (!S.shift || r.shift===S.shift) &&
     (!S.unit || r.unit===S.unit) && (!S.month || monthKey(r.start)===S.month) &&
     (!q || [r.candidate,r.client,r.facilityUnit,r.req,r.unit,r.shift].join(" ").toLowerCase().includes(q)));
@@ -437,20 +451,22 @@ function opts(sel, label, values, cur, fmt=v=>v){
 function buildFilters(){
   const all = D.records;
   const uniq = k => [...new Set(all.map(r=>r[k]).filter(Boolean))].sort();
+  opts($("#fStatus"),"Candidate status",["Onboarding","Started"],S.status);
   opts($("#fClient"),"Client",uniq("client"),S.client);
   opts($("#fShift"),"Shift",uniq("shift"),S.shift);
   opts($("#fUnit"),"Unit",uniq("unit"),S.unit);
   opts($("#fMonth"),"Start month",[...new Set(all.map(r=>monthKey(r.start)).filter(Boolean))].sort(),S.month,monthLbl);
   $("#fCancelled").checked = S.cancelled;
   const chips=[];
+  if(S.status) chips.push(["status",S.status]);
   if(S.client) chips.push(["client",S.client]); if(S.shift) chips.push(["shift",S.shift]);
   if(S.unit) chips.push(["unit",S.unit]); if(S.month) chips.push(["month",monthLbl(S.month)]);
   if(S.q) chips.push(["q",`“${S.q}”`]); if(S.cancelled) chips.push(["cancelled","Incl. cancelled"]);
   $("#chips").innerHTML = chips.map(([k,v])=>`<span class="chip">${esc(v)}<button data-k="${k}" title="Remove">×</button></span>`).join("") + (chips.length>1?`<button class="linkbtn" id="clearAll">Clear all</button>`:"");
   $("#chips").querySelectorAll("button[data-k]").forEach(b=>b.onclick=()=>{ const k=b.dataset.k; if(k==="cancelled") S.cancelled=false; else if(k==="q"){S.q="";$("#q").value="";} else S[k]=""; render(); });
-  const ca=$("#clearAll"); if(ca) ca.onclick=()=>{ Object.assign(S,{client:"",shift:"",unit:"",month:"",cancelled:false,q:""}); $("#q").value=""; render(); };
+  const ca=$("#clearAll"); if(ca) ca.onclick=()=>{ Object.assign(S,{status:"",client:"",shift:"",unit:"",month:"",cancelled:false,q:""}); $("#q").value=""; render(); };
 }
-["Client","Shift","Unit","Month"].forEach(n=>$("#f"+n).addEventListener("change",e=>{S[n.toLowerCase()]=e.target.value;render();}));
+["Status","Client","Shift","Unit","Month"].forEach(n=>$("#f"+n).addEventListener("change",e=>{S[n.toLowerCase()]=e.target.value;render();}));
 $("#fCancelled").addEventListener("change",e=>{S.cancelled=e.target.checked;render();});
 let qT; $("#q").addEventListener("input",e=>{clearTimeout(qT);qT=setTimeout(()=>{S.q=e.target.value;render();},120);});
 
@@ -461,7 +477,7 @@ function kpiCard({id,lbl,val,sub,tag,dot,accent,action,extra=""}){
     <div class="val num">${val}</div><div class="sub">${sub||"&nbsp;"}</div>${extra}</div>`;
 }
 function renderKPIs(rs){
-  const act = rs.filter(r=>r.status==="Active");
+  const act = rs.filter(LIVE);
   const uniqueNames = new Set(rs.map(r=>(r.candidate||"").toLowerCase().trim()).filter(Boolean));
   const clients = new Set(rs.map(r=>r.client).filter(Boolean));
   const facs = new Set(rs.map(r=>r.facility).filter(Boolean));
@@ -474,7 +490,7 @@ function renderKPIs(rs){
   const in14 = upcoming.filter(r=>(pdate(r.start)-today)/864e5<=14).length;
   const next = upcoming[0];
   const cards = [
-    {id:"count",lbl:"Active offers",tag:"count",val:act.length,sub:`${uniqueNames.size} unique candidate${uniqueNames.size===1?"":"s"}${S.cancelled?` · ${rs.length-act.length} cancelled`:""}`,accent:true,action:"Sort table by candidate"},
+    {id:"count",lbl:"Active offers",tag:"count",val:act.length,sub:`${act.filter(r=>r.status==="Onboarding").length} onboarding · ${act.filter(r=>r.status==="Started").length} started · ${uniqueNames.size} unique${S.cancelled?` · ${rs.length-act.length} cancelled`:""}`,accent:true,action:"Sort table by candidate"},
     {id:"clients",lbl:"Clients · Facilities",tag:"count",val:`${clients.size} <span style="font-weight:500;color:var(--ink-3);font-size:15px">/ ${facs.size}</span>`,sub:[...clients].map(c=>c.replace(/ \(.*\)/,"").replace(" Health","")).join(", ")+" · facilities",action:"Sort table by client"},
     {id:"grossRev",lbl:"Gross revenue",tag:"total",val:kfmt(gross),sub:`Net of MSP ${kfmt(sum(act.map(r=>r.netRev)))}`,action:"Sort table by gross revenue"},
     {id:"netProfit",lbl:"Net profit",tag:"total",val:kfmt(profit),sub:`${pct(gross?profit/gross:null)} margin · ${money(wkProfit)}/wk`,dot:"var(--teal)",action:"Sort table by net profit"},
@@ -520,9 +536,9 @@ function renderCharts(rs){
       onClick:(e,els)=>{ if(els.length){const r=byP[els[0].index]; openDrawer(r.row,r.sheet);} }, onHover:(e,els)=>e.native.target.style.cursor=els.length?"pointer":"default"}});
   // 2. by client
   const cl = [...new Set(act.map(r=>r.client))].sort((a,b)=>sum(act.filter(r=>r.client===b).map(r=>r.grossRev))-sum(act.filter(r=>r.client===a).map(r=>r.grossRev)));
-  const g = cl.map(c=>sum(act.filter(r=>r.client===c&&r.status==="Active").map(r=>r.grossRev)));
-  const p = cl.map(c=>sum(act.filter(r=>r.client===c&&r.status==="Active").map(r=>r.netProfit)));
-  const n = cl.map(c=>act.filter(r=>r.client===c&&r.status==="Active").length);
+  const g = cl.map(c=>sum(act.filter(r=>r.client===c&&LIVE(r)).map(r=>r.grossRev)));
+  const p = cl.map(c=>sum(act.filter(r=>r.client===c&&LIVE(r)).map(r=>r.netProfit)));
+  const n = cl.map(c=>act.filter(r=>r.client===c&&LIVE(r)).length);
   mk("chClient",{type:"bar",data:{labels:cl.map(c=>c.replace(" (via HWL)","").replace(" Health","")),datasets:[{label:"Gross revenue",data:g,backgroundColor:cssv("--bar-muted"),borderRadius:3,maxBarThickness:26},{label:"Net profit",data:p,backgroundColor:"#0EA5A0",borderRadius:3,maxBarThickness:26}]},
     options:{maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{...tip,callbacks:{title:c=>`${cl[c[0].dataIndex]} · ${n[c[0].dataIndex]} offer(s)`,label:c=>`${c.dataset.label}: ${money(c.raw)}`}}},
       scales:{y:{grid,border:{display:false},ticks:{callback:v=>kfmt(v),maxTicksLimit:5}},x:{grid:{display:false},border:{display:false}}},
@@ -546,7 +562,7 @@ function renderCharts(rs){
 
 /* ---------- table ---------- */
 const COLS = [
-  {k:"candidate",t:"Candidate",f:r=>`<b>${esc(r.candidate)}</b>${r.status==="Cancelled"?' <span class="pill p-cancelled">Cancelled</span>':""}<span class="s">${esc(r.req)}</span>`},
+  {k:"candidate",t:"Candidate",f:r=>`<b>${esc(r.candidate)}</b>${r.status==="Cancelled"?' <span class="pill p-cancelled">Cancelled</span>':r.status==="Started"?' <span class="pill p-active">Started</span>':""}<span class="s">${esc(r.req)}</span>`},
   {k:"client",t:"Client / Facility",f:r=>`<span class="cdot" style="background:${color(r.client)}"></span>${esc(r.client)}<span class="s" title="${esc(r.facilityUnit)}">${esc(r.facilityUnit)}</span>`},
   {k:"unit",t:"Unit · Shift",f:r=>`${esc(r.unit)}<span class="s"><span class="pill ${r.shift==="Days"?"p-days":"p-nights"}">${esc(r.shift)}</span> ${r.hrsShift??""}h · ${nfmt(r.guarHrs)}/wk</span>`,cls:"hide-m"},
   {k:"start",t:"Start",f:r=>`${fdateS(r.start)}<span class="s">${r.weeks??"—"} wks · to ${fdateS(r.end)}</span>`},
@@ -565,7 +581,7 @@ function sortRows(rs){
 }
 function renderTable(rs){
   const rows = sortRows(rs);
-  const act = rs.filter(r=>r.status==="Active");
+  const act = rs.filter(LIVE);
   const head = `<thead><tr>${COLS.map(c=>`<th class="${c.r?"r ":""}${S.sort===c.k?"sorted ":""}${c.cls||""}" data-k="${c.k}">${c.t}<span class="arr">${S.sort===c.k?(S.dir>0?"▲":"▼"):"▲▼"}</span></th>`).join("")}</tr></thead>`;
   const body = rows.length ? rows.map(r=>`<tr data-row="${r.row}" data-sheet="${esc(r.sheet)}" class="${S.sel&&S.sel.row===r.row&&S.sel.sheet===r.sheet?"sel":""}">${COLS.map(c=>`<td class="${c.r?"r num ":""}${c.cls||""}">${c.f(r)}</td>`).join("")}</tr>`).join("")
     : `<tr><td colspan="${COLS.length}" class="empty">No candidates match these filters.</td></tr>`;
@@ -588,9 +604,17 @@ function ccard(r){
     <div class="row3"><div class="mini"><span>Stipend / wk</span><b class="num">${money(r.stipend)}</b></div><div class="mini"><span>Net profit</span><b class="num">${money(r.netProfit)}</b></div><div class="mini"><span>Margin</span><b class="num">${pct(r.marginPct)}</b></div></div>
   </div>`;
 }
-function renderCards(rs){
-  $("#ccards").innerHTML = rs.length ? sortRows(rs).map(ccard).join("") : `<div class="empty card">No candidates match these filters.</div>`;
-  $("#ccards").querySelectorAll(".ccard").forEach(c=>c.onclick=()=>openDrawer(+c.dataset.row,c.dataset.sheet));
+function renderCards(rs, status){
+  const box = status==="Started" ? "#ccStarted" : "#ccOnb", sumBox = status==="Started" ? "#sumStarted" : "#sumOnb";
+  rs = rs.filter(r=>r.status===status);
+  const g=sum(rs.map(r=>r.grossRev)), p=sum(rs.map(r=>r.netProfit));
+  $(sumBox).innerHTML = [["Candidates",rs.length],["Gross revenue",money(g)],["Net profit",money(p)],["Margin",pct(g?p/g:null)],["Profit / week",money(sum(rs.map(r=>r.weeklyProfit)))]]
+    .map(([l,v])=>`<div class="mini"><span>${l}</span><b class="num">${v}</b></div>`).join("");
+  const none = status==="Started"
+    ? `<div class="empty card">No candidates have started yet. When the Compliance Board marks a candidate as started, they move here with their full calculations.</div>`
+    : `<div class="empty card">No onboarding candidates match these filters.</div>`;
+  $(box).innerHTML = rs.length ? sortRows(rs).map(ccard).join("") : none;
+  $(box).querySelectorAll(".ccard").forEach(c=>c.onclick=()=>openDrawer(+c.dataset.row,c.dataset.sheet));
 }
 function renderCancelled(){
   const rs = filtered({status:"Cancelled"});
@@ -620,7 +644,7 @@ function openDrawer(row, sheet){
   const extra = Object.entries(r.extra||{}).filter(([k,v])=>v!=null&&v!=="");
   $("#drawer").innerHTML = `
     <div class="dh"><div class="avatar" style="background:${r.status==="Cancelled"?"#B5544A":color(r.client)};width:40px;height:40px;flex-basis:40px;font-size:14px">${initials(r.candidate)}</div>
-      <div style="flex:1;min-width:0"><h3>${esc(r.candidate)} <span class="pill ${r.status==="Active"?"p-active":"p-cancelled"}">${r.status==="Active"?"Accepted offer":"Cancelled"}</span></h3>
+      <div style="flex:1;min-width:0"><h3>${esc(r.candidate)} <span class="pill ${{Onboarding:"p-onb",Started:"p-active",Cancelled:"p-cancelled"}[r.status]}">${{Onboarding:"Onboarding",Started:"Started",Cancelled:"Cancelled"}[r.status]}</span></h3>
       <div class="loc">${esc(r.client)} · ${esc(r.facilityUnit)}</div><div class="loc muted">${esc(r.req)} · Excel row ${r.row} (${esc(r.sheet)})</div></div>
       <button class="iconbtn" id="dPrev" ${prev?"":"disabled"} title="Previous">‹</button><button class="iconbtn" id="dNext" ${next?"":"disabled"} title="Next">›</button><button class="iconbtn" id="dClose" title="Close">✕</button></div>
     <div class="db">
@@ -662,7 +686,7 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeDrawer(); if
 function renderFees(){
   const used = new Set(D.records.map(r=>r.client));
   $("#feeTbl").innerHTML = `<thead><tr><th>Client</th><th class="r">MSP fee</th><th class="r">NBO hrs</th><th class="r">Active offers</th><th>Source</th></tr></thead><tbody>` +
-    Object.entries(D.fees).map(([c,f])=>`<tr style="cursor:default"><td><span class="cdot" style="background:${color(c)}"></span>${esc(c)}</td><td class="r num">${pct(f.msp,1)}</td><td class="r num">${nfmt(f.nbo)}</td><td class="r num">${D.records.filter(r=>r.client===c&&r.status==="Active").length||"—"}</td><td class="muted">${esc(f.source)}</td></tr>`).join("") + `</tbody>`;
+    Object.entries(D.fees).map(([c,f])=>`<tr style="cursor:default"><td><span class="cdot" style="background:${color(c)}"></span>${esc(c)}</td><td class="r num">${pct(f.msp,1)}</td><td class="r num">${nfmt(f.nbo)}</td><td class="r num">${D.records.filter(r=>r.client===c&&LIVE(r)).length||"—"}</td><td class="muted">${esc(f.source)}</td></tr>`).join("") + `</tbody>`;
   const s = D.settings;
   $("#settingsBox").innerHTML = `<h3 style="margin:0 0 8px;font-size:13px">${esc(s.settings_title||"Calculator settings")}</h3>
     <div class="kv one" style="margin-bottom:10px"><div><span>Payroll load on W2</span><b>${pct(s.payroll_load,0)}</b></div><div><span>Recruiting + onboarding cost</span><b>${money(s.onboarding_cost)}</b></div></div>
@@ -684,7 +708,7 @@ function renderQuality(){
 }
 
 /* ---------- views ---------- */
-const TITLES={overview:"Margin Dashboard",candidates:"Candidates",cancelled:"Cancelled offers",fees:"Client fees",quality:"Data quality"};
+const TITLES={overview:"Margin Dashboard",onboarding:"Onboarding",started:"Started",cancelled:"Cancelled offers",fees:"Client fees",quality:"Data quality"};
 document.querySelectorAll(".nav[data-view]").forEach(b=>b.onclick=()=>{ S.view=b.dataset.view; render(); $("#content").scrollTop=0; });
 $("#collapseBtn").onclick=()=>{ $("#app").classList.toggle("collapsed"); try{localStorage.setItem("soloh_ob_sb",$("#app").classList.contains("collapsed")?"1":"0");}catch(e){} setTimeout(()=>Object.values(charts).forEach(c=>c.resize()),50); };
 $("#printBtn").onclick=()=>window.print();
@@ -698,17 +722,20 @@ function render(){
   document.querySelectorAll("section[data-page]").forEach(s=>s.classList.toggle("hidden",s.dataset.page!==S.view));
   $("#viewTitle").textContent = TITLES[S.view];
   $("#filters").classList.toggle("hidden", ["fees","quality"].includes(S.view));
-  $("#fCancelled").parentElement.classList.toggle("hidden", S.view==="cancelled");
+  $("#fCancelled").parentElement.classList.toggle("hidden", ["cancelled","onboarding","started"].includes(S.view));
+  $("#fStatus").classList.toggle("hidden", ["cancelled","onboarding","started"].includes(S.view));
   const rs = filtered();
   if(S.view==="overview"){ renderKPIs(rs); renderCharts(rs); renderTable(rs); }
-  if(S.view==="candidates") renderCards(rs);
+  if(S.view==="onboarding") renderCards(rs,"Onboarding");
+  if(S.view==="started") renderCards(rs,"Started");
   if(S.view==="cancelled") renderCancelled();
 }
 function init(){
   Object.keys(D.fees||{}).forEach(color); D.records.forEach(r=>color(r.client));
   try{ if(localStorage.getItem("soloh_ob_sb")==="1") $("#app").classList.add("collapsed"); }catch(e){}
   $("#metaLine").textContent = `Data updated ${D.builtAt} · ${D.workbook}`;
-  $("#cntActive").textContent = D.records.filter(r=>r.status==="Active").length;
+  $("#cntOnb").textContent = D.records.filter(r=>r.status==="Onboarding").length;
+  $("#cntStarted").textContent = D.records.filter(r=>r.status==="Started").length;
   $("#cntCancelled").textContent = D.records.filter(r=>r.status==="Cancelled").length;
   $("#cntQuality").textContent = D.quality.filter(q=>q.sev!=="info").length || "";
   $("#footNote").textContent = `Pay figures are from the workbook (W2, OT, stipend, bill rate). Weekly gross pay = min(guaranteed hrs, 40) × W2 + hours over 40 × OT + stipend. Net profit uses the workbook's formula with the Client Fees settings. KPI tags: TOTAL = sum of active offers, AVG = mean per offer, INDIVIDUAL = one candidate.`;

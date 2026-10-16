@@ -244,9 +244,9 @@ def quality(records, dq):
                                  else "No effect on the numbers (guaranteed hours are 40 or less).")})
         if r["unit"] == "Not specified":
             dq.append({"sev": "info", "sheet": sheet, "row": r["row"], "who": who, "msg": f"No unit/specialty found in '{r['facilityUnit']}'."})
-        if r["status"] == "Active" and r["netProfit"] is not None and r["netProfit"] < 0:
+        if r["status"] != "Cancelled" and r["netProfit"] is not None and r["netProfit"] < 0:
             dq.append({"sev": "error", "sheet": sheet, "row": r["row"], "who": who, "msg": "Negative net profit."})
-    active = [r for r in records if r["status"] == "Active" and r["marginPct"] is not None]
+    active = [r for r in records if r["status"] != "Cancelled" and r["marginPct"] is not None]
     if len(active) >= 4:
         ms = sorted(r["marginPct"] for r in active)
         med = ms[len(ms) // 2]
@@ -285,7 +285,9 @@ def main():
     for name in wb_f.sheetnames:
         if name == fee_sheet:
             sheets_info.append({"name": name, "role": "Client fees & calculator settings", "rows": len(fees), "unmapped": []}); continue
-        status = "Cancelled" if re.search(r"cancel|declin", name, re.I) else "Active"
+        # Sheet name decides status: "Cancelled/Declined" sheets, "Started" sheets, everything else = Onboarding
+        status = ("Cancelled" if re.search(r"cancel|declin", name, re.I)
+                  else "Started" if re.search(r"start", name, re.I) else "Onboarding")
         rows, mapping, unmapped = read_sheet(wb_f[name], wb_v[name])
         if "candidate" not in mapping:
             sheets_info.append({"name": name, "role": "Ignored (no Candidate column)", "rows": len(rows), "unmapped": unmapped}); continue
@@ -315,8 +317,9 @@ def main():
     html = html.replace("/*__ENCRYPTED_DATA__*/null", json.dumps(blob))
     with open(a.out, "w") as fh:
         fh.write(html)
-    act = sum(1 for r in records if r["status"] == "Active")
-    print(f"Built {a.out}: {act} active, {len(records)-act} cancelled, {len(dq)} data-quality notes.")
+    act = sum(1 for r in records if r["status"] != "Cancelled")
+    started = sum(1 for r in records if r["status"] == "Started")
+    print(f"Built {a.out}: {act} active ({act-started} onboarding, {started} started), {len(records)-act} cancelled, {len(dq)} data-quality notes.")
 
 if __name__ == "__main__":
     main()
