@@ -526,7 +526,7 @@ function renderCharts(rs){
   mk("chClient",{type:"bar",data:{labels:cl.map(c=>c.replace(" (via HWL)","").replace(" Health","")),datasets:[{label:"Gross revenue",data:g,backgroundColor:cssv("--bar-muted"),borderRadius:3,maxBarThickness:26},{label:"Net profit",data:p,backgroundColor:"#0EA5A0",borderRadius:3,maxBarThickness:26}]},
     options:{maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{...tip,callbacks:{title:c=>`${cl[c[0].dataIndex]} · ${n[c[0].dataIndex]} offer(s)`,label:c=>`${c.dataset.label}: ${money(c.raw)}`}}},
       scales:{y:{grid,border:{display:false},ticks:{callback:v=>kfmt(v),maxTicksLimit:5}},x:{grid:{display:false},border:{display:false}}},
-      onClick:(e,els)=>{ if(els.length){ const c=cl[els[0].index]; S.client = S.client===c?"":c; render(); } }, onHover:(e,els)=>e.native.target.style.cursor=els.length?"pointer":"default"}});
+      onClick:(e,els)=>{ if(els.length){ const c=cl[els[0].index]; setTimeout(()=>{ S.client = S.client===c?"":c; render(); },0); } }, onHover:(e,els)=>e.native.target.style.cursor=els.length?"pointer":"default"}});
   // 3. start dates by week (Monday)
   const wk = s => { const d=pdate(s); const m=new Date(d); m.setDate(d.getDate()-((d.getDay()+6)%7)); return m.toISOString().slice(0,10); };
   const weeks = [...new Set(act.filter(r=>r.start).map(r=>wk(r.start)))].sort();
