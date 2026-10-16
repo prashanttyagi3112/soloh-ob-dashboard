@@ -52,3 +52,8 @@ python3 move_candidate.py --xlsx data/OB_Candidates_Pay_Packages_Soloh.xlsx --na
 python3 build.py --password "THE-PASSWORD"
 ```
 `move_candidate.py` keeps every formula pointing at its own row, so the calculations move with the candidate.
+
+## Team and Recruiter
+Each candidate sheet has **Team** and **Recruiter** columns (copied from the Soloh Compliance Board).
+They drive the Team and Recruiter filters, the recruiter line under each name, the cards and the detail panel.
+New candidates get both values from the Compliance Board when they are added.

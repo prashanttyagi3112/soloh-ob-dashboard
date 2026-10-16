@@ -137,7 +137,7 @@ td b{font-weight:600}
 tfoot td{white-space:nowrap;position:sticky;bottom:0;background:var(--th);font-weight:600;border-top:1px solid var(--line);border-bottom:0}
 .pill{display:inline-block;border-radius:20px;padding:1px 8px;font-size:11px;font-weight:600;white-space:nowrap}
 .p-days{background:var(--amber-50);color:var(--amber)}.p-nights{background:var(--nights-bg);color:var(--nights)}
-.p-active{background:var(--green-50);color:var(--green)}.p-onb{background:var(--blue-50);color:var(--blue)}.p-cancelled{background:var(--red-50);color:var(--red)}
+.p-active{background:var(--green-50);color:var(--green)}.p-onb{background:var(--blue-50);color:var(--blue)}.p-team{background:var(--teal-50);color:var(--teal);margin-right:4px}.p-cancelled{background:var(--red-50);color:var(--red)}
 .cdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:1px}
 .mbar{display:inline-block;width:38px;height:5px;background:var(--line-2);border-radius:3px;margin-left:6px;vertical-align:2px;overflow:hidden}
 .mbar i{display:block;height:100%;background:var(--teal)}
@@ -314,6 +314,8 @@ aside{position:relative;isolation:isolate;background:radial-gradient(1.3px 1.3px
         <select id="fShift"></select>
         <select id="fUnit"></select>
         <select id="fMonth"></select>
+        <select id="fTeam"></select>
+        <select id="fRecruiter"></select>
         <label class="toggle"><input type="checkbox" id="fCancelled"> Include cancelled</label>
         <div class="chips" id="chips"></div>
       </div>
@@ -384,7 +386,7 @@ aside{position:relative;isolation:isolate;background:radial-gradient(1.3px 1.3px
 const ENC = /*__ENCRYPTED_DATA__*/null;
 let D = null;                        // decrypted dataset
 const LIVE = r => r.status!=="Cancelled";
-const S = {status:"",client:"",shift:"",unit:"",month:"",cancelled:false,q:"",sort:"netProfit",dir:-1,view:"overview",sel:null};
+const S = {status:"",client:"",shift:"",unit:"",month:"",team:"",recruiter:"",cancelled:false,q:"",sort:"netProfit",dir:-1,view:"overview",sel:null};
 const charts = {};
 // Colors are assigned to clients in Client Fees sheet order (no client names in the page source).
 const COLORS = ["#2F6FED","#0EA5A0","#7C5CE0","#D9468C","#E08A00","#3E9C5A","#B5544A","#5A6B8C","#A07C2E"];
@@ -442,8 +444,9 @@ function filtered(opts={}){
   return D.records.filter(r =>
     (opts.status ? r.status===opts.status : ((S.cancelled || LIVE(r)) && (!S.status || r.status===S.status || r.status==="Cancelled"))) &&
     (!S.client || r.client===S.client) && (!S.shift || r.shift===S.shift) &&
+    (!S.team || r.team===S.team) && (!S.recruiter || r.recruiter===S.recruiter) &&
     (!S.unit || r.unit===S.unit) && (!S.month || monthKey(r.start)===S.month) &&
-    (!q || [r.candidate,r.client,r.facilityUnit,r.req,r.unit,r.shift].join(" ").toLowerCase().includes(q)));
+    (!q || [r.candidate,r.client,r.facilityUnit,r.req,r.unit,r.shift,r.team,r.recruiter].join(" ").toLowerCase().includes(q)));
 }
 function opts(sel, label, values, cur, fmt=v=>v){
   sel.innerHTML = `<option value="">${label}: All</option>` + values.map(v=>`<option value="${esc(v)}"${v===cur?" selected":""}>${esc(label)}: ${esc(fmt(v))}</option>`).join("");
@@ -456,17 +459,20 @@ function buildFilters(){
   opts($("#fShift"),"Shift",uniq("shift"),S.shift);
   opts($("#fUnit"),"Unit",uniq("unit"),S.unit);
   opts($("#fMonth"),"Start month",[...new Set(all.map(r=>monthKey(r.start)).filter(Boolean))].sort(),S.month,monthLbl);
+  opts($("#fTeam"),"Team",uniq("team"),S.team);
+  opts($("#fRecruiter"),"Recruiter",[...new Set(all.filter(r=>!S.team||r.team===S.team).map(r=>r.recruiter).filter(Boolean))].sort(),S.recruiter);
   $("#fCancelled").checked = S.cancelled;
   const chips=[];
   if(S.status) chips.push(["status",S.status]);
   if(S.client) chips.push(["client",S.client]); if(S.shift) chips.push(["shift",S.shift]);
   if(S.unit) chips.push(["unit",S.unit]); if(S.month) chips.push(["month",monthLbl(S.month)]);
+  if(S.team) chips.push(["team",S.team]); if(S.recruiter) chips.push(["recruiter",S.recruiter]);
   if(S.q) chips.push(["q",`“${S.q}”`]); if(S.cancelled) chips.push(["cancelled","Incl. cancelled"]);
   $("#chips").innerHTML = chips.map(([k,v])=>`<span class="chip">${esc(v)}<button data-k="${k}" title="Remove">×</button></span>`).join("") + (chips.length>1?`<button class="linkbtn" id="clearAll">Clear all</button>`:"");
   $("#chips").querySelectorAll("button[data-k]").forEach(b=>b.onclick=()=>{ const k=b.dataset.k; if(k==="cancelled") S.cancelled=false; else if(k==="q"){S.q="";$("#q").value="";} else S[k]=""; render(); });
-  const ca=$("#clearAll"); if(ca) ca.onclick=()=>{ Object.assign(S,{status:"",client:"",shift:"",unit:"",month:"",cancelled:false,q:""}); $("#q").value=""; render(); };
+  const ca=$("#clearAll"); if(ca) ca.onclick=()=>{ Object.assign(S,{status:"",client:"",shift:"",unit:"",month:"",team:"",recruiter:"",cancelled:false,q:""}); $("#q").value=""; render(); };
 }
-["Status","Client","Shift","Unit","Month"].forEach(n=>$("#f"+n).addEventListener("change",e=>{S[n.toLowerCase()]=e.target.value;render();}));
+["Status","Client","Shift","Unit","Month","Team","Recruiter"].forEach(n=>$("#f"+n).addEventListener("change",e=>{S[n.toLowerCase()]=e.target.value; if(n==="Team") S.recruiter=""; render();}));
 $("#fCancelled").addEventListener("change",e=>{S.cancelled=e.target.checked;render();});
 let qT; $("#q").addEventListener("input",e=>{clearTimeout(qT);qT=setTimeout(()=>{S.q=e.target.value;render();},120);});
 
@@ -562,7 +568,7 @@ function renderCharts(rs){
 
 /* ---------- table ---------- */
 const COLS = [
-  {k:"candidate",t:"Candidate",f:r=>`<b>${esc(r.candidate)}</b>${r.status==="Cancelled"?' <span class="pill p-cancelled">Cancelled</span>':r.status==="Started"?' <span class="pill p-active">Started</span>':""}<span class="s">${esc(r.req)}</span>`},
+  {k:"candidate",t:"Candidate",f:r=>`<b>${esc(r.candidate)}</b>${r.status==="Cancelled"?' <span class="pill p-cancelled">Cancelled</span>':r.status==="Started"?' <span class="pill p-active">Started</span>':""}<span class="s" title="${esc(r.req)}">${r.recruiter?esc(r.recruiter)+" · "+esc((r.team||"").replace("'s Team","")):esc(r.req)}</span>`},
   {k:"client",t:"Client / Facility",f:r=>`<span class="cdot" style="background:${color(r.client)}"></span>${esc(r.client)}<span class="s" title="${esc(r.facilityUnit)}">${esc(r.facilityUnit)}</span>`},
   {k:"unit",t:"Unit · Shift",f:r=>`${esc(r.unit)}<span class="s"><span class="pill ${r.shift==="Days"?"p-days":"p-nights"}">${esc(r.shift)}</span> ${r.hrsShift??""}h · ${nfmt(r.guarHrs)}/wk</span>`,cls:"hide-m"},
   {k:"start",t:"Start",f:r=>`${fdateS(r.start)}<span class="s">${r.weeks??"—"} wks · to ${fdateS(r.end)}</span>`},
@@ -600,6 +606,7 @@ function ccard(r){
       <div style="min-width:0;flex:1"><h4>${esc(r.candidate)}</h4><div class="loc">${esc(r.client)} · ${esc(r.facility)}</div></div>
       <span class="pill ${r.shift==="Days"?"p-days":"p-nights"}">${esc(r.shift)}</span></div>
     <div class="loc">${esc(r.unit)} · ${r.hrsShift}h × ${r.guarHrs/r.hrsShift||"—"} · starts ${fdate(r.start)} (${r.weeks} wks)</div>
+    ${r.recruiter||r.team?`<div class="loc"><span class="pill p-team">${esc(r.team||"No team")}</span> Recruiter: <b style="color:var(--ink-2)">${esc(r.recruiter||"—")}</b></div>`:""}
     <div class="row3"><div class="mini"><span>W2 / hr</span><b class="num">${money2(r.w2)}</b></div><div class="mini"><span>Pay / wk</span><b class="num">${money(r.weeklyGross)}</b></div><div class="mini"><span>Bill rate</span><b class="num">${money2(r.bill)}</b></div></div>
     <div class="row3"><div class="mini"><span>Stipend / wk</span><b class="num">${money(r.stipend)}</b></div><div class="mini"><span>Net profit</span><b class="num">${money(r.netProfit)}</b></div><div class="mini"><span>Margin</span><b class="num">${pct(r.marginPct)}</b></div></div>
   </div>`;
@@ -655,7 +662,8 @@ function openDrawer(row, sheet){
         <div><span>Start</span><b>${fdate(r.start)}</b></div><div><span>End</span><b>${fdate(r.end)}</b></div>
         <div><span>Weeks</span><b>${r.weeks??"—"}</b></div><div><span>Shift</span><b>${esc(r.shift)}</b></div>
         <div><span>Hours / shift</span><b>${nfmt(r.hrsShift)}</b></div><div><span>Guaranteed hrs / wk</span><b>${nfmt(r.guarHrs)}</b></div>
-        <div><span>Unit</span><b>${esc(r.unit)}</b></div><div><span>Facility</span><b style="text-align:right">${esc(r.facility)}</b></div></div></div>
+        <div><span>Unit</span><b>${esc(r.unit)}</b></div><div><span>Facility</span><b style="text-align:right">${esc(r.facility)}</b></div>
+        <div><span>Team</span><b>${esc(r.team||"—")}</b></div><div><span>Recruiter</span><b>${esc(r.recruiter||"—")}</b></div></div></div>
       <div class="sec"><h5>Pay package (nurse)</h5><div class="kv">
         <div><span>W2 hourly</span><b class="num">${money2(r.w2)}</b></div><div><span>OT rate</span><b class="num">${money2(r.ot)}</b></div>
         <div><span>Weekly stipend</span><b class="num">${money(r.stipend)}</b></div><div><span>Taxable / wk</span><b class="num">${money2(r.weeklyTaxable)}</b></div>

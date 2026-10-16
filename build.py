@@ -51,6 +51,8 @@ FIELD_ALIASES = {
     "net_rev":    ["net revenue"],
     "net_profit": ["net profit"],
     "reason":     ["status / reason", "status", "reason"],
+    "team":       ["team", "team name", "recruiter team"],
+    "recruiter":  ["recruiter", "recruiter name"],
 }
 
 def norm(s):
@@ -209,6 +211,7 @@ def finalize(rec, status):
         "billAfter": num(rec.get("bill_after")), "msp": num(rec.get("msp")), "nbo": num(rec.get("nbo")),
         "grossRev": num(rec.get("gross_rev")), "netRev": num(rec.get("net_rev")),
         "netProfit": num(rec.get("net_profit")), "reason": text(rec.get("reason")),
+        "team": text(rec.get("team")), "recruiter": text(rec.get("recruiter")),
         "extra": {k: (v.isoformat() if isinstance(v, (dt.date, dt.datetime)) else v) for k, v in rec["_extra"].items()},
     }
     out["weeklyTaxable"] = wk_taxable
@@ -242,6 +245,8 @@ def quality(records, dq):
                        "msg": f"OT rate ${r['ot']:.2f} is {r['ot']/r['w2']:.2f}x the W2 rate ${r['w2']:.2f} (not 1.5x). "
                               + ("Affects profit, since guaranteed hours exceed 40." if (r['guarHrs'] or 0) > 40
                                  else "No effect on the numbers (guaranteed hours are 40 or less).")})
+        if not r.get("team") or not r.get("recruiter"):
+            dq.append({"sev": "warn", "sheet": sheet, "row": r["row"], "who": who, "msg": "Team or Recruiter is blank."})
         if r["unit"] == "Not specified":
             dq.append({"sev": "info", "sheet": sheet, "row": r["row"], "who": who, "msg": f"No unit/specialty found in '{r['facilityUnit']}'."})
         if r["status"] != "Cancelled" and r["netProfit"] is not None and r["netProfit"] < 0:
