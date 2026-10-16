@@ -1,6 +1,6 @@
-# Soloh OB Pay Packages Dashboard
+# Margin Dashboard (Soloh Partners)
 
-Password-protected dashboard for Soloh Partners' accepted (OB) candidates and their pay packages.
+Password-protected Margin Dashboard for Soloh Partners: candidate pay packages, client bill rates, MSP fees, revenue and margins.
 It is built from `OB_Candidates_Pay_Packages_Soloh.xlsx`.
 
 ## How the protection works

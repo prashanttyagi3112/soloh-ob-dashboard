@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Build the Soloh OB Pay Package Dashboard from the Excel workbook.
+Build the Soloh Margin Dashboard from the Excel workbook.
 
 Usage:
     python3 build.py --password "YOUR-PASSWORD" [--xlsx data/OB_Candidates_Pay_Packages_Soloh.xlsx]

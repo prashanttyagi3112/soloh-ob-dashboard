@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Soloh OB Pay Packages</title>
+<title>Margin Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="vendor/chart.umd.min.js"></script>
@@ -204,7 +204,7 @@ tfoot td{white-space:nowrap;position:sticky;bottom:0;background:#F8FAFD;font-wei
 <!-- ================= LOGIN ================= -->
 <div id="login">
   <form class="login-card" id="loginForm" autocomplete="on">
-    <div class="brand"><div class="brand-mark">S</div><div><b>Soloh Partners</b><div class="muted" style="font-size:11.5px">OB Pay Packages</div></div></div>
+    <div class="brand"><div class="brand-mark">S</div><div><b>Soloh Partners</b><div class="muted" style="font-size:11.5px">Margin Dashboard</div></div></div>
     <h1>Sign in</h1>
     <p>This dashboard holds confidential pay data. Enter the team password.</p>
     <input type="text" name="username" value="soloh" autocomplete="username" hidden>
@@ -218,7 +218,7 @@ tfoot td{white-space:nowrap;position:sticky;bottom:0;background:#F8FAFD;font-wei
 <!-- ================= APP ================= -->
 <div id="app" class="hidden">
   <aside>
-    <div class="brand"><div class="brand-mark">S</div><div><b>Soloh Partners</b><small>OB Pay Packages</small></div></div>
+    <div class="brand"><div class="brand-mark">S</div><div><b>Soloh Partners</b><small>Margin Dashboard</small></div></div>
     <button class="nav active" data-view="overview"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Overview</span></button>
     <button class="nav" data-view="candidates"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c1.9.7 3.1 2.4 3.5 5.2"/></svg><span>Candidates</span><em class="count" id="cntActive"></em></button>
     <button class="nav" data-view="cancelled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7"/></svg><span>Cancelled offers</span><em class="count" id="cntCancelled"></em></button>
@@ -230,7 +230,7 @@ tfoot td{white-space:nowrap;position:sticky;bottom:0;background:#F8FAFD;font-wei
   </aside>
   <main>
     <div class="topbar">
-      <h2 id="viewTitle">Overview</h2>
+      <h2 id="viewTitle">Margin Dashboard</h2>
       <div class="meta" id="metaLine"></div>
       <div class="grow"></div>
       <label class="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input class="input" id="q" placeholder="Search name, facility, req…" autocomplete="off"></label>
@@ -616,7 +616,7 @@ function renderQuality(){
 }
 
 /* ---------- views ---------- */
-const TITLES={overview:"Overview",candidates:"Candidates",cancelled:"Cancelled offers",fees:"Client fees",quality:"Data quality"};
+const TITLES={overview:"Margin Dashboard",candidates:"Candidates",cancelled:"Cancelled offers",fees:"Client fees",quality:"Data quality"};
 document.querySelectorAll(".nav[data-view]").forEach(b=>b.onclick=()=>{ S.view=b.dataset.view; render(); $("#content").scrollTop=0; });
 $("#collapseBtn").onclick=()=>{ $("#app").classList.toggle("collapsed"); try{localStorage.setItem("soloh_ob_sb",$("#app").classList.contains("collapsed")?"1":"0");}catch(e){} setTimeout(()=>Object.values(charts).forEach(c=>c.resize()),50); };
 $("#printBtn").onclick=()=>window.print();
