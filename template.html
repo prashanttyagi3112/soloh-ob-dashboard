@@ -247,6 +247,17 @@ aside{position:relative;isolation:isolate;background:radial-gradient(1.3px 1.3px
 :root[data-theme="dark"] .kpi:not(.accent),:root[data-theme="dark"] .card,:root[data-theme="dark"] .ccard{background:color-mix(in srgb,var(--card) 84%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 #login .btn-primary{background:linear-gradient(135deg,#0EA5A0,#2F6FED);border:0;box-shadow:0 6px 20px rgba(47,111,237,.35)}
 #login .btn-primary:hover{filter:brightness(1.08)}
+
+/* ---------- light/dark switch ---------- */
+.theme-sw{display:inline-flex;align-items:center;gap:2px;padding:3px;border-radius:999px;background:var(--line-2);border:1px solid var(--line);flex:0 0 auto}
+.theme-sw button{display:inline-flex;align-items:center;gap:5px;border:0;background:transparent;color:var(--ink-2);font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;cursor:pointer;line-height:1}
+.theme-sw button:hover{color:var(--ink)}
+.theme-sw button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(15,30,54,.18)}
+.theme-sw button[data-t="light"].on{color:#C77C02}
+:root[data-theme="dark"] .theme-sw{background:#0B1426;border-color:#2C3D5C}
+:root[data-theme="dark"] .theme-sw button.on{background:#22355A;color:#fff;box-shadow:0 0 0 1px #3D5A8C,0 0 12px rgba(91,140,245,.35)}
+:root[data-theme="dark"] .theme-sw button[data-t="dark"].on svg{color:#B4C8FF}
+@media (max-width:760px){.theme-sw span{display:none}.theme-sw button{padding:6px 8px}}
 </style>
 </head>
 <body>
@@ -285,7 +296,10 @@ aside{position:relative;isolation:isolate;background:radial-gradient(1.3px 1.3px
       <div class="meta" id="metaLine"></div>
       <div class="grow"></div>
       <label class="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input class="input" id="q" placeholder="Search name, facility, req…" autocomplete="off"></label>
-      <button class="iconbtn" id="themeBtn" title="Switch light / dark mode" aria-label="Switch light / dark mode"></button>
+      <div class="theme-sw" id="themeSw" role="radiogroup" aria-label="Color mode">
+        <button type="button" role="radio" data-t="light"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Light</span></button>
+        <button type="button" role="radio" data-t="dark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg><span>Dark</span></button>
+      </div>
       <button class="iconbtn" id="printBtn" title="Print / save as PDF"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7"/></svg></button>
     </div>
     <div class="content" id="content">
@@ -674,11 +688,9 @@ const TITLES={overview:"Margin Dashboard",candidates:"Candidates",cancelled:"Can
 document.querySelectorAll(".nav[data-view]").forEach(b=>b.onclick=()=>{ S.view=b.dataset.view; render(); $("#content").scrollTop=0; });
 $("#collapseBtn").onclick=()=>{ $("#app").classList.toggle("collapsed"); try{localStorage.setItem("soloh_ob_sb",$("#app").classList.contains("collapsed")?"1":"0");}catch(e){} setTimeout(()=>Object.values(charts).forEach(c=>c.resize()),50); };
 $("#printBtn").onclick=()=>window.print();
-const SUN='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
-const MOON='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>';
-function setThemeIcon(){ const d=document.documentElement.dataset.theme==="dark"; $("#themeBtn").innerHTML=d?SUN:MOON; $("#themeBtn").title=d?"Switch to light mode":"Switch to dark mode"; }
+function setThemeIcon(){ const t=document.documentElement.dataset.theme; document.querySelectorAll("#themeSw button").forEach(b=>{ const on=b.dataset.t===t; b.classList.toggle("on",on); b.setAttribute("aria-checked",on); }); }
 setThemeIcon();
-$("#themeBtn").onclick=()=>{ const t=document.documentElement.dataset.theme==="dark"?"light":"dark"; document.documentElement.dataset.theme=t; try{localStorage.setItem("soloh_margin_theme",t);}catch(e){} setThemeIcon(); if(D) render(); if(S.sel) openDrawer(S.sel.row,S.sel.sheet); };
+document.querySelectorAll("#themeSw button").forEach(b=>b.onclick=()=>{ const t=b.dataset.t; if(document.documentElement.dataset.theme===t) return; document.documentElement.dataset.theme=t; try{localStorage.setItem("soloh_margin_theme",t);}catch(e){} setThemeIcon(); if(D) render(); if(S.sel) openDrawer(S.sel.row,S.sel.sheet); });
 
 function render(){
   buildFilters();
