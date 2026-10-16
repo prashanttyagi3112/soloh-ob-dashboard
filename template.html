@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="vendor/chart.umd.min.js"></script>
+<script>(function(){var t=null;try{t=localStorage.getItem("soloh_margin_theme");}catch(e){}if(!t){t=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.dataset.theme=t;})();</script>
 <style>
 :root{
   --navy:#0B1B33; --navy-2:#12264A; --navy-3:#1B3461; --ink:#0F1E36; --ink-2:#44536B; --ink-3:#7A879C;
@@ -15,6 +16,22 @@
   --teal:#0EA5A0; --teal-50:#E6F7F6; --blue:#2F6FED; --blue-50:#EAF1FE;
   --green:#12A150; --green-50:#E7F6EE; --amber:#C77C02; --amber-50:#FDF4E3; --red:#D64545; --red-50:#FCEBEB;
   --r:10px; --sh:0 1px 2px rgba(15,30,54,.06),0 2px 8px rgba(15,30,54,.04);
+  --th:#F8FAFD; --hover:#F6F9FE; --border-hi:#B9C7DD; --nights-bg:#EEEAFB; --nights:#5B42C9;
+  --note-bd:#F3DDAE; --note-ink:#7A4E00; --note-red-bd:#F2C6C6; --note-red-ink:#8E2A2A;
+  --bar-muted:#B9CBEA; --seg-muted:#C3CCDA; --grid:#EEF2F7; --tick:#5B6A82;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --navy:#060D1A; --navy-2:#0E1A30; --navy-3:#172A4D;
+  --ink:#E6ECF5; --ink-2:#A9B6CA; --ink-3:#7F8DA5;
+  --bg:#0A1120; --card:#111B2E; --line:#22314A; --line-2:#1A263B;
+  --teal-50:rgba(14,165,160,.16); --blue-50:rgba(47,111,237,.2); --green-50:rgba(18,161,80,.18); --amber-50:rgba(199,124,2,.18); --red-50:rgba(214,69,69,.18);
+  --teal:#1CC2BC; --blue:#5B8CF5; --green:#3CC47A; --amber:#F0A63A; --red:#F07575;
+  --sh:0 1px 2px rgba(0,0,0,.3);
+  --th:#15213A; --hover:#17243F; --border-hi:#3A4E73; --nights-bg:rgba(124,92,224,.22); --nights:#B4A2F5;
+  --note-bd:rgba(240,166,58,.35); --note-ink:#F5C77E; --note-red-bd:rgba(240,117,117,.35); --note-red-ink:#F4A9A9;
+  --bar-muted:#3A4E73; --seg-muted:#4A5A78; --grid:#1E2B42; --tick:#94A3BA;
+  color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
@@ -25,16 +42,16 @@ button,input,select{font:inherit;color:inherit}
 
 /* ---------- login ---------- */
 #login{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(1200px 600px at 20% 0%,#1B3461 0%,var(--navy) 55%,#07122A 100%);z-index:50;padding:16px}
-.login-card{width:100%;max-width:380px;background:#fff;border-radius:14px;padding:28px 26px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.login-card{width:100%;max-width:380px;background:var(--card);color:var(--ink);border-radius:14px;padding:28px 26px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
 .brand{display:flex;align-items:center;gap:10px}
 .brand-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--teal),var(--blue));display:grid;place-items:center;color:#fff;font-weight:700;font-size:15px}
 .login-card h1{font-size:18px;margin:18px 0 4px}
 .login-card p{margin:0 0 18px;color:var(--ink-2)}
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
 .field label{font-size:12px;font-weight:600;color:var(--ink-2)}
-.input{border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:#fff;outline:none;width:100%}
+.input{border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:var(--card);outline:none;width:100%}
 .input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-50)}
-.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:6px}
 .btn:hover{background:var(--line-2)}
 .btn-primary{background:var(--navy);border-color:var(--navy);color:#fff;width:100%;justify-content:center;padding:10px}
 .btn-primary:hover{background:var(--navy-3)}
@@ -56,20 +73,20 @@ aside .brand small{display:block;color:#8FA2C0;font-size:11px;font-weight:500}
 .collapsed .nav span,.collapsed .nav .count,.collapsed aside .brand div{display:none}
 aside .spacer{flex:1}
 main{display:flex;flex-direction:column;min-width:0;height:100vh}
-.topbar{display:flex;align-items:center;gap:12px;padding:10px 18px;background:#fff;border-bottom:1px solid var(--line)}
+.topbar{display:flex;align-items:center;gap:12px;padding:10px 18px;background:var(--card);border-bottom:1px solid var(--line)}
 .topbar h2{margin:0;font-size:16px;font-weight:700;white-space:nowrap}
 .topbar .meta{color:var(--ink-3);font-size:11.5px;white-space:nowrap}
 .topbar .grow{flex:1}
 .search{position:relative;width:min(280px,32vw)}
 .search input{padding-left:30px}
 .search svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--ink-3)}
-.iconbtn{border:1px solid var(--line);background:#fff;border-radius:8px;width:32px;height:32px;display:grid;place-items:center;cursor:pointer;flex:0 0 auto}
+.iconbtn{border:1px solid var(--line);background:var(--card);border-radius:8px;width:32px;height:32px;display:grid;place-items:center;cursor:pointer;flex:0 0 auto}
 .iconbtn:hover{background:var(--line-2)}
 .content{flex:1;overflow:auto;padding:12px 18px 18px}
 
 /* ---------- filters ---------- */
 .filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px}
-.filters select{border:1px solid var(--line);border-radius:8px;padding:6px 26px 6px 10px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237A879C' fill='none' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 9px center;appearance:none;cursor:pointer;max-width:200px}
+.filters select{border:1px solid var(--line);border-radius:8px;padding:6px 26px 6px 10px;background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237A879C' fill='none' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 9px center;appearance:none;cursor:pointer;max-width:200px}
 .toggle{display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);cursor:pointer;user-select:none}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{display:inline-flex;align-items:center;gap:6px;background:var(--blue-50);color:var(--blue);border-radius:20px;padding:3px 6px 3px 10px;font-size:12px;font-weight:500}
@@ -79,7 +96,7 @@ main{display:flex;flex-direction:column;min-width:0;height:100vh}
 /* ---------- KPIs ---------- */
 .kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:10px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;box-shadow:var(--sh);cursor:pointer;text-align:left;transition:border-color .12s,box-shadow .12s;position:relative;min-width:0}
-.kpi:hover{border-color:#B9C7DD;box-shadow:0 2px 10px rgba(15,30,54,.08)}
+.kpi:hover{border-color:var(--border-hi);box-shadow:0 2px 10px rgba(15,30,54,.08)}
 .kpi.on{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-50)}
 .kpi .lbl{font-size:11px;color:var(--ink-2);font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .kpi .tag{font-size:9.5px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-3);background:var(--line-2);border-radius:4px;padding:1px 5px;margin-left:auto}
@@ -106,20 +123,20 @@ main{display:flex;flex-direction:column;min-width:0;height:100vh}
 .tbl-wrap{overflow:auto;max-height:calc(100vh - 140px)}
 .overview .tbl-wrap{max-height:420px}
 table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.2px}
-th{position:sticky;top:0;background:#F8FAFD;z-index:1;text-align:left;font-weight:600;color:var(--ink-2);font-size:11px;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
+th{position:sticky;top:0;background:var(--th);z-index:1;text-align:left;font-weight:600;color:var(--ink-2);font-size:11px;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
 th.r,td.r{text-align:right}
 th:hover{color:var(--ink)}
 th .arr{opacity:.35;margin-left:3px;font-size:9px}
 th.sorted .arr{opacity:1;color:var(--blue)}
 td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:top}
 tbody tr{cursor:pointer}
-tbody tr:hover td{background:#F6F9FE}
+tbody tr:hover td{background:var(--hover)}
 tbody tr.sel td{background:var(--blue-50)}
 td .s{display:block;color:var(--ink-3);font-size:11px;margin-top:1px;max-width:210px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 td b{font-weight:600}
-tfoot td{white-space:nowrap;position:sticky;bottom:0;background:#F8FAFD;font-weight:600;border-top:1px solid var(--line);border-bottom:0}
+tfoot td{white-space:nowrap;position:sticky;bottom:0;background:var(--th);font-weight:600;border-top:1px solid var(--line);border-bottom:0}
 .pill{display:inline-block;border-radius:20px;padding:1px 8px;font-size:11px;font-weight:600;white-space:nowrap}
-.p-days{background:var(--amber-50);color:var(--amber)}.p-nights{background:#EEEAFB;color:#5B42C9}
+.p-days{background:var(--amber-50);color:var(--amber)}.p-nights{background:var(--nights-bg);color:var(--nights)}
 .p-active{background:var(--green-50);color:var(--green)}.p-cancelled{background:var(--red-50);color:var(--red)}
 .cdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:1px}
 .mbar{display:inline-block;width:38px;height:5px;background:var(--line-2);border-radius:3px;margin-left:6px;vertical-align:2px;overflow:hidden}
@@ -128,8 +145,8 @@ tfoot td{white-space:nowrap;position:sticky;bottom:0;background:#F8FAFD;font-wei
 
 /* ---------- candidate cards ---------- */
 .ccards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
-.ccard{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px;box-shadow:var(--sh);cursor:pointer;display:flex;flex-direction:column;gap:8px}
-.ccard:hover{border-color:#B9C7DD}
+.ccard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;box-shadow:var(--sh);cursor:pointer;display:flex;flex-direction:column;gap:8px}
+.ccard:hover{border-color:var(--border-hi)}
 .ccard .top{display:flex;align-items:flex-start;gap:8px}
 .avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:600;font-size:12px;flex:0 0 32px}
 .ccard h4{margin:0;font-size:13.5px}
@@ -142,7 +159,7 @@ tfoot td{white-space:nowrap;position:sticky;bottom:0;background:#F8FAFD;font-wei
 /* ---------- drawer ---------- */
 #scrim{position:fixed;inset:0;background:rgba(11,27,51,.35);z-index:20;opacity:0;pointer-events:none;transition:opacity .15s}
 #scrim.on{opacity:1;pointer-events:auto}
-#drawer{position:fixed;top:0;right:0;height:100vh;width:min(480px,100vw);background:#fff;z-index:21;transform:translateX(100%);transition:transform .18s ease;display:flex;flex-direction:column}
+#drawer{position:fixed;top:0;right:0;height:100vh;width:min(480px,100vw);background:var(--card);z-index:21;transform:translateX(100%);transition:transform .18s ease;display:flex;flex-direction:column}
 #drawer.on{transform:none;box-shadow:-10px 0 30px rgba(11,27,51,.15)}
 .dh{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:flex-start}
 .dh h3{margin:0;font-size:16px}
@@ -159,8 +176,8 @@ tfoot td{white-space:nowrap;position:sticky;bottom:0;background:#F8FAFD;font-wei
 .stack i{display:block;height:100%}
 .slegend{display:grid;grid-template-columns:1fr auto auto;gap:3px 12px;font-size:12px}
 .slegend em{font-style:normal;color:var(--ink-3);text-align:right}
-.note{background:var(--amber-50);border:1px solid #F3DDAE;color:#7A4E00;border-radius:8px;padding:8px 10px;font-size:12px;margin-bottom:6px}
-.note.red{background:var(--red-50);border-color:#F2C6C6;color:#8E2A2A}
+.note{background:var(--amber-50);border:1px solid var(--note-bd);color:var(--note-ink);border-radius:8px;padding:8px 10px;font-size:12px;margin-bottom:6px}
+.note.red{background:var(--red-50);border-color:var(--note-red-bd);color:var(--note-red-ink)}
 .big3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
 .big3 .mini b{font-size:16px}
 
@@ -234,6 +251,7 @@ tfoot td{white-space:nowrap;position:sticky;bottom:0;background:#F8FAFD;font-wei
       <div class="meta" id="metaLine"></div>
       <div class="grow"></div>
       <label class="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input class="input" id="q" placeholder="Search name, facility, req…" autocomplete="off"></label>
+      <button class="iconbtn" id="themeBtn" title="Switch light / dark mode" aria-label="Switch light / dark mode"></button>
       <button class="iconbtn" id="printBtn" title="Print / save as PDF"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7"/></svg></button>
     </div>
     <div class="content" id="content">
@@ -251,7 +269,7 @@ tfoot td{white-space:nowrap;position:sticky;bottom:0;background:#F8FAFD;font-wei
         <div class="kpis" id="kpis"></div>
         <div class="grid-charts">
           <div class="card"><div class="card-h"><h3>Net profit by candidate</h3><span class="hint">Contract total · click a bar</span></div><div class="chart-box" style="height:214px"><canvas id="chProfit"></canvas></div></div>
-          <div class="card"><div class="card-h"><h3>Revenue &amp; profit by client</h3><span class="hint">click to filter</span></div><div class="chart-box"><canvas id="chClient"></canvas></div><div class="legend"><span><i style="background:#B9CBEA"></i>Gross revenue</span><span><i style="background:var(--teal)"></i>Net profit</span></div></div>
+          <div class="card"><div class="card-h"><h3>Revenue &amp; profit by client</h3><span class="hint">click to filter</span></div><div class="chart-box"><canvas id="chClient"></canvas></div><div class="legend"><span><i style="background:var(--bar-muted)"></i>Gross revenue</span><span><i style="background:var(--teal)"></i>Net profit</span></div></div>
           <div class="card"><div class="card-h"><h3>Start dates</h3><span class="hint">by week</span></div><div class="chart-box"><canvas id="chStart"></canvas></div><div class="legend" id="lgStart"></div></div>
           <div class="card"><div class="card-h"><h3>Bill rate vs weekly gross pay</h3></div><div class="chart-box"><canvas id="chScatter"></canvas></div><div class="legend" id="lgScatter"></div></div>
         </div>
@@ -439,10 +457,12 @@ function renderKPIs(rs){
 function rangeTxt(a,f){ return a.length>1 ? `Range ${f(Math.min(...a))} – ${f(Math.max(...a))}` : a.length?"1 offer":"No data"; }
 
 /* ---------- charts ---------- */
-Chart.defaults.font.family = "Inter, system-ui, sans-serif"; Chart.defaults.font.size = 11; Chart.defaults.color = "#5B6A82";
+Chart.defaults.font.family = "Inter, system-ui, sans-serif"; Chart.defaults.font.size = 11;
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const grid = {color:"#EEF2F7",drawTicks:false}, tip = {backgroundColor:"#0B1B33",padding:8,cornerRadius:6,displayColors:false};
 function mk(id, cfg){ if(charts[id]) charts[id].destroy(); charts[id] = new Chart($("#"+id), cfg); }
 function renderCharts(rs){
+  Chart.defaults.color = cssv("--tick"); grid.color = cssv("--grid");
   const act = rs;
   // 1. profit by candidate
   const byP = [...act].filter(r=>r.netProfit!=null).sort((a,b)=>b.netProfit-a.netProfit);
@@ -455,7 +475,7 @@ function renderCharts(rs){
   const g = cl.map(c=>sum(act.filter(r=>r.client===c&&r.status==="Active").map(r=>r.grossRev)));
   const p = cl.map(c=>sum(act.filter(r=>r.client===c&&r.status==="Active").map(r=>r.netProfit)));
   const n = cl.map(c=>act.filter(r=>r.client===c&&r.status==="Active").length);
-  mk("chClient",{type:"bar",data:{labels:cl.map(c=>c.replace(" (via HWL)","").replace(" Health","")),datasets:[{label:"Gross revenue",data:g,backgroundColor:"#B9CBEA",borderRadius:3,maxBarThickness:26},{label:"Net profit",data:p,backgroundColor:"#0EA5A0",borderRadius:3,maxBarThickness:26}]},
+  mk("chClient",{type:"bar",data:{labels:cl.map(c=>c.replace(" (via HWL)","").replace(" Health","")),datasets:[{label:"Gross revenue",data:g,backgroundColor:cssv("--bar-muted"),borderRadius:3,maxBarThickness:26},{label:"Net profit",data:p,backgroundColor:"#0EA5A0",borderRadius:3,maxBarThickness:26}]},
     options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...tip,callbacks:{title:c=>`${cl[c[0].dataIndex]} · ${n[c[0].dataIndex]} offer(s)`,label:c=>`${c.dataset.label}: ${money(c.raw)}`}}},
       scales:{y:{grid,border:{display:false},ticks:{callback:v=>kfmt(v),maxTicksLimit:5}},x:{grid:{display:false},border:{display:false}}},
       onClick:(e,els)=>{ if(els.length){ const c=cl[els[0].index]; S.client = S.client===c?"":c; render(); } }, onHover:(e,els)=>e.native.target.style.cursor=els.length?"pointer":"default"}});
@@ -542,7 +562,7 @@ function openDrawer(row, sheet){
   const payroll = (r.weeks||0)*(r.weeklyTaxable||0)*(1+load);
   const stip = (r.weeks||0)*(r.stipend||0);
   const nbo = (r.nbo||0)*(r.bill||0)*(1-(r.msp||0));
-  const parts = [["Payroll (W2 + OT, incl. "+pct(load,0)+" load)",payroll,"#2F6FED"],["Stipend",stip,"#7FA6F2"],["MSP fee",mspFee,"#C3CCDA"],["NBO (unbilled orientation)",nbo,"#E0A84A"]];
+  const parts = [["Payroll (W2 + OT, incl. "+pct(load,0)+" load)",payroll,"#2F6FED"],["Stipend",stip,"#7FA6F2"],["MSP fee",mspFee,"var(--seg-muted)"],["NBO (unbilled orientation)",nbo,"#E0A84A"]];
   if(onb) parts.push(["Recruiting + onboarding",onb,"#B5544A"]);
   parts.push(["Net profit",r.netProfit,"#0EA5A0"]);
   const tot = r.grossRev||1;
@@ -620,6 +640,11 @@ const TITLES={overview:"Margin Dashboard",candidates:"Candidates",cancelled:"Can
 document.querySelectorAll(".nav[data-view]").forEach(b=>b.onclick=()=>{ S.view=b.dataset.view; render(); $("#content").scrollTop=0; });
 $("#collapseBtn").onclick=()=>{ $("#app").classList.toggle("collapsed"); try{localStorage.setItem("soloh_ob_sb",$("#app").classList.contains("collapsed")?"1":"0");}catch(e){} setTimeout(()=>Object.values(charts).forEach(c=>c.resize()),50); };
 $("#printBtn").onclick=()=>window.print();
+const SUN='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const MOON='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>';
+function setThemeIcon(){ const d=document.documentElement.dataset.theme==="dark"; $("#themeBtn").innerHTML=d?SUN:MOON; $("#themeBtn").title=d?"Switch to light mode":"Switch to dark mode"; }
+setThemeIcon();
+$("#themeBtn").onclick=()=>{ const t=document.documentElement.dataset.theme==="dark"?"light":"dark"; document.documentElement.dataset.theme=t; try{localStorage.setItem("soloh_margin_theme",t);}catch(e){} setThemeIcon(); if(D) render(); if(S.sel) openDrawer(S.sel.row,S.sel.sheet); };
 
 function render(){
   buildFilters();
