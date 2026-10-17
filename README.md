@@ -57,3 +57,16 @@ python3 build.py --password "THE-PASSWORD"
 Each candidate sheet has **Team** and **Recruiter** columns (copied from the Soloh Compliance Board).
 They drive the Team and Recruiter filters, the recruiter line under each name, the cards and the detail panel.
 New candidates get both values from the Compliance Board when they are added.
+
+## Automation: new board cards → Margin Dashboard → Soloh Margin Dashboard
+A scheduled Claude task ("Margin sync") runs right after every Soloh Compliance Board update.
+It never adds anyone on its own: it proposes, asks Prashant, and only adds after he says yes.
+
+| File | Purpose |
+|---|---|
+| `vault/workbook.xlsx.enc` | The pay-package workbook, encrypted with the dashboard password (raw .xlsx is never committed) |
+| `vault/state.json.enc` | Encrypted list of people Prashant said not to add (so he isn't asked again) |
+| `automation/vault.py` | `lock` / `unlock` a file with the dashboard password |
+| `automation/sync_check.py` | Read-only: board cards missing from this dashboard, and this dashboard's candidates missing from the Soloh Margin Dashboard |
+| `automation/add_candidate.py` | Adds one approved candidate row; formula columns are copied and renumbered from the row above |
+| `automation/state.py` | `skip-margin`, `skip-soloh`, `unskip`, `show` |
